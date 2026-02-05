@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Presentation\Views\SplashScreenManager.cs" />
     <Page Include="Presentation\Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -117,7 +118,6 @@
     <Folder Include="Presentation\ViewModels\" />
     <Folder Include="Referencias\" />
     <Folder Include="Resources\Fonts\" />
-    <Folder Include="Resources\Images\" />
     <Folder Include="Utilities\Encryption\" />
     <Folder Include="Utilities\Extensions\" />
     <Folder Include="Utilities\Helpers\" />
@@ -151,6 +151,12 @@
     <PackageReference Include="Microsoft.Extensions.Hosting">
       <Version>10.0.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Dark\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Ligth\logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

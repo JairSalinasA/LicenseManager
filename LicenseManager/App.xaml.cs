@@ -1,59 +1,81 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using LicenseManager.Presentation.Views;
 
 namespace LicenseManager
 {
     public partial class App : Application
     {
-        private SplashWindow _splash;
-
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            // Mostrar Splash Screen
-            _splash = new SplashWindow();
-            _splash.Show();
+            // Mostrar splash screen INMEDIATAMENTE
+            SplashScreenManager.Show("License Manager", "Iniciando aplicación...");
 
-            // Inicializar aplicación en segundo plano
-            InitializeApplication();
+            // Inicializar en segundo plano
+            Task.Run(async () =>
+            {
+                await InitializeApplicationAsync();
+            });
         }
 
-        private void InitializeApplication()
+        private async Task InitializeApplicationAsync()
         {
-            // Usar Timer para simular carga
-            var timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(3); // 3 segundos de splash
-            timer.Tick += (sender, args) =>
+            try
             {
-                timer.Stop();
+                // Etapa 1
+                await Task.Delay(500);
+                SplashScreenManager.UpdateStatus("Cargando configuración...");
 
-                // Cerrar Splash suavemente
-                _splash.CloseSmoothly();
+                // Etapa 2
+                await Task.Delay(700);
+                SplashScreenManager.UpdateStatus("Inicializando módulos...");
 
-                // Dar tiempo a que se cierre
-                var closeTimer = new DispatcherTimer();
-                closeTimer.Interval = TimeSpan.FromMilliseconds(600);
-                closeTimer.Tick += (s, e) =>
+                // Etapa 3
+                await Task.Delay(600);
+                SplashScreenManager.UpdateStatus("Conectando con base de datos...");
+
+                // Etapa 4
+                await Task.Delay(800);
+                SplashScreenManager.UpdateStatus("Preparando interfaz...");
+
+                // Etapa 5
+                await Task.Delay(400);
+                SplashScreenManager.UpdateStatus("¡Casi listo!");
+
+                // Dar un momento final
+                await Task.Delay(300);
+
+                // Cerrar splash screen y esperar a que termine la animación
+                SplashScreenManager.Close();
+
+                // IMPORTANTE: Esperar a que el splash se cierre completamente
+                await Task.Delay(500); // Tiempo de la animación de cierre
+
+                // Mostrar ventana principal en el thread de UI
+                await Application.Current.Dispatcher.InvokeAsync(() =>
                 {
-                    closeTimer.Stop();
                     ShowMainWindow();
-                };
-                closeTimer.Start();
-            };
-            timer.Start();
+                });
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    MessageBox.Show($"Error: {ex.Message}");
+                });
+            }
         }
 
         private void ShowMainWindow()
         {
-            // Mostrar ventana principal
             var mainWindow = new MainWindow();
-            mainWindow.Show();
-
-            // Opcional: centrar ventana
             mainWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            mainWindow.Show();
+            mainWindow.Activate(); // Forzar que la ventana tome el foco
+            mainWindow.Focus();
         }
     }
 }

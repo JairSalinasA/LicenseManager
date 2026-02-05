@@ -1,79 +1,242 @@
 ﻿<Window x:Class="LicenseManager.Presentation.Views.SplashWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Loading..."
         WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
         Background="Transparent"
+        Width="600" Height="400"
+        Topmost="True"
         ShowInTaskbar="False"
-        ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen"
-        Height="350"
-        Width="550">
+        ResizeMode="NoResize">
 
-    <!-- Fondo con bordes redondeados y sombra -->
-    <Border Background="White" 
-            CornerRadius="15"
-            BorderBrush="#3498DB"
-            BorderThickness="2">
+    <Window.Resources>
+        <!-- Animación para los puntos del loading -->
+        <Storyboard x:Key="DotAnimation" RepeatBehavior="Forever">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot1" 
+                                          Storyboard.TargetProperty="Opacity"
+                                          Duration="0:0:1.5">
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.3"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0.3" Value="1"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0.6" Value="0.3"/>
+            </DoubleAnimationUsingKeyFrames>
 
-        <!-- Sombra -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot2" 
+                                          Storyboard.TargetProperty="Opacity"
+                                          Duration="0:0:1.5">
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.3"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0.3" Value="0.3"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0.6" Value="1"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0.9" Value="0.3"/>
+            </DoubleAnimationUsingKeyFrames>
+
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot3" 
+                                          Storyboard.TargetProperty="Opacity"
+                                          Duration="0:0:1.5">
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.3"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0.6" Value="0.3"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0.9" Value="1"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:1.2" Value="0.3"/>
+            </DoubleAnimationUsingKeyFrames>
+
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot4" 
+                                          Storyboard.TargetProperty="Opacity"
+                                          Duration="0:0:1.5">
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.3"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0.9" Value="0.3"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:1.2" Value="1"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:1.5" Value="0.3"/>
+            </DoubleAnimationUsingKeyFrames>
+
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Dot5" 
+                                          Storyboard.TargetProperty="Opacity"
+                                          Duration="0:0:1.5">
+                <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0.3"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:1.2" Value="0.3"/>
+                <DiscreteDoubleKeyFrame KeyTime="0:0:1.5" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <!-- Animación de entrada desde la izquierda -->
+        <Storyboard x:Key="SlideInFromLeft">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                           From="-200" To="0" Duration="0:0:0.8">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                           From="0" To="1" Duration="0:0:0.8"/>
+        </Storyboard>
+
+        <!-- Animación de entrada desde la derecha -->
+        <Storyboard x:Key="SlideInFromRight">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
+                           From="200" To="0" Duration="0:0:0.8">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                           From="0" To="1" Duration="0:0:0.8"/>
+        </Storyboard>
+
+        <!-- Animación de fade in para el centro -->
+        <Storyboard x:Key="FadeInCenter">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                           From="0" To="1" Duration="0:0:1"
+                           BeginTime="0:0:0.3"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <!-- Sombra exterior -->
+    <Border Margin="20" CornerRadius="20">
         <Border.Effect>
-            <DropShadowEffect ShadowDepth="10" 
-                             BlurRadius="20" 
-                             Opacity="0.3"/>
+            <DropShadowEffect Color="Black" BlurRadius="30" ShadowDepth="0" Opacity="0.6"/>
         </Border.Effect>
 
-        <Grid>
-            <!-- Fondo degradado -->
-            <Grid.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="#2C3E50" Offset="0"/>
-                    <GradientStop Color="#3498DB" Offset="1"/>
+        <!-- Contenedor principal -->
+        <Border x:Name="MainBorder" CornerRadius="20">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" Opacity="0.4">
+                    <!--<GradientStop Color="#2E3192" Offset="0"/>
+                    <GradientStop Color="#1BFFFF" Offset="1"/>-->
                 </LinearGradientBrush>
-            </Grid.Background>
+            </Border.Background>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            <!-- Grid principal con todas las secciones -->
+            <Grid Margin="30">
 
-            <!-- Icono grande -->
-            <TextBlock Grid.Row="0" 
-                      Text="🔑" 
-                      FontSize="80"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center"
-                      Margin="0,20,0,0"/>
+                <!-- LOGO - Esquina Superior Izquierda (entra desde la izquierda) -->
+                <Viewbox x:Name="LogoElement" 
+                        Width="100" Height="100" 
+                        HorizontalAlignment="Left" 
+                        VerticalAlignment="Top"
+                        RenderTransformOrigin="0.5,0.5"
+                        Opacity="0"
+                        Margin="0,-10,0,0">
+                    <Viewbox.RenderTransform>
+                        <TranslateTransform X="-200" Y="-12"/>
+                    </Viewbox.RenderTransform>
 
-            <!-- Título principal -->
-            <TextBlock Grid.Row="1" 
-                      Text="LICENSE MANAGER"
-                      Foreground="White"
-                      FontSize="32"
-                      FontWeight="Bold"
-                      HorizontalAlignment="Center"
-                      Margin="0,10,0,0"/>
+                    <!-- Logo: usar Build Action = Resource y ruta pack://application -->
+                    <Image Width="100" Height="100"
+                           Stretch="Uniform"
+                           Source="pack://application:,,,/LicenseManager;component/Resources/Images/Dark/logo.png"
+                           ToolTip="Logo SIGETEC">
+                        <Image.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="0" Opacity="0.5"/>
+                        </Image.Effect>
+                    </Image>
+                </Viewbox>
 
-            <!-- Subtítulo -->
-            <TextBlock Grid.Row="2" 
-                      Text="Professional License Management System"
-                      Foreground="#ECF0F1"
-                      FontSize="16"
-                      HorizontalAlignment="Center"
-                      Margin="0,5,0,0"/>
+                <!-- TÍTULO Y SUBTÍTULO - Centro (fade in) -->
+                <StackPanel x:Name="CenterElement"
+                           VerticalAlignment="Center" 
+                           HorizontalAlignment="Center"
+                           Opacity="0">
 
-            <!-- Loading text -->
-            <TextBlock Grid.Row="3" 
-                      x:Name="LoadingText"
-                      Text="Loading..."
-                      Foreground="White"
-                      FontSize="14"
-                      FontStyle="Italic"
-                      HorizontalAlignment="Center"
-                      Margin="0,40,0,40"/>
-        </Grid>
+                    <!-- Nombre del Software -->
+                    <TextBlock Text="License Manager" 
+                              FontSize="48" 
+                              FontWeight="Light" 
+                              Foreground="White"
+                              HorizontalAlignment="Center"
+                              Margin="0,0,0,10">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="10" ShadowDepth="0" Opacity="0.8"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+
+                    <!-- Powered by -->
+                    <TextBlock Text="Powered by SIGETEC" 
+                              FontSize="16" 
+                              FontWeight="Light"
+                              Foreground="White"
+                              Opacity="0.85"
+                              HorizontalAlignment="Center">
+                        <TextBlock.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="6" ShadowDepth="0" Opacity="0.6"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+
+                    <!-- Progress Dots - Puntitos -->
+                    <StackPanel Orientation="Horizontal" 
+                               HorizontalAlignment="Center"
+                               Margin="0,30,0,0">
+                        <Ellipse x:Name="Dot1" Width="12" Height="12" Fill="White" Margin="4" Opacity="0.3">
+                            <Ellipse.Effect>
+                                <DropShadowEffect Color="White" BlurRadius="6" ShadowDepth="0" Opacity="0.8"/>
+                            </Ellipse.Effect>
+                        </Ellipse>
+                        <Ellipse x:Name="Dot2" Width="12" Height="12" Fill="White" Margin="4" Opacity="0.3">
+                            <Ellipse.Effect>
+                                <DropShadowEffect Color="White" BlurRadius="6" ShadowDepth="0" Opacity="0.8"/>
+                            </Ellipse.Effect>
+                        </Ellipse>
+                        <Ellipse x:Name="Dot3" Width="12" Height="12" Fill="White" Margin="4" Opacity="0.3">
+                            <Ellipse.Effect>
+                                <DropShadowEffect Color="White" BlurRadius="6" ShadowDepth="0" Opacity="0.8"/>
+                            </Ellipse.Effect>
+                        </Ellipse>
+                        <Ellipse x:Name="Dot4" Width="12" Height="12" Fill="White" Margin="4" Opacity="0.3">
+                            <Ellipse.Effect>
+                                <DropShadowEffect Color="White" BlurRadius="6" ShadowDepth="0" Opacity="0.8"/>
+                            </Ellipse.Effect>
+                        </Ellipse>
+                        <Ellipse x:Name="Dot5" Width="12" Height="12" Fill="White" Margin="4" Opacity="0.3">
+                            <Ellipse.Effect>
+                                <DropShadowEffect Color="White" BlurRadius="6" ShadowDepth="0" Opacity="0.8"/>
+                            </Ellipse.Effect>
+                        </Ellipse>
+                    </StackPanel>
+
+                </StackPanel>
+
+                <!-- STATUS TEXT - Esquina Inferior Izquierda (entra desde la izquierda) -->
+                <TextBlock x:Name="StatusText" 
+                          Text="Cargando configuración..." 
+                          FontSize="13" 
+                          FontWeight="Normal"
+                          Foreground="White"
+                          Opacity="0"
+                          HorizontalAlignment="Left"
+                          VerticalAlignment="Bottom"
+                          RenderTransformOrigin="0.5,0.5">
+                    <TextBlock.RenderTransform>
+                        <TranslateTransform X="-200"/>
+                    </TextBlock.RenderTransform>
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="4" ShadowDepth="0" Opacity="0.6"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+
+                <!-- COPYRIGHT - Esquina Inferior Derecha (entra desde la derecha) -->
+                <TextBlock x:Name="CopyrightText"
+                          Text="Copyright © 2025 SIGETEC. All rights reserved." 
+                          FontSize="10" 
+                          FontWeight="Light"
+                          Foreground="White"
+                          Opacity="0"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Bottom"
+                          RenderTransformOrigin="0.5,0.5">
+                    <TextBlock.RenderTransform>
+                        <TranslateTransform X="200"/>
+                    </TextBlock.RenderTransform>
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="3" ShadowDepth="0" Opacity="0.5"/>
+                    </TextBlock.Effect>
+                </TextBlock>
+
+            </Grid>
+        </Border>
     </Border>
+
+    <Window.Triggers>
+        <!-- Iniciar animación de puntos -->
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource DotAnimation}"/>
+        </EventTrigger>
+    </Window.Triggers>
 </Window>
