@@ -1,33 +1,774 @@
-﻿<Window x:Class="LicenseManager.Presentation.Views.MainWindow"
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="LicenseManager.Presentation.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="License Manager" 
-        Height="450" 
-        Width="800"
-        WindowStartupLocation="CenterScreen">
+        Title="LicensePro - Dashboard" 
+        Height="900" 
+        Width="1600"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="#F8F9FA">
 
-    <Grid Background="#F8F9FA">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock Text="🎉 ¡APLICACIÓN INICIADA!" 
-                      FontSize="28" 
-                      FontWeight="Bold"
-                      Foreground="#2C3E50"
-                      Margin="0,0,0,20"/>
+    <Window.Resources>
+        <!-- Colores del tema -->
+        <SolidColorBrush x:Key="PrimaryColor" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="SecondaryColor" Color="#1E40AF"/>
+        <SolidColorBrush x:Key="SuccessColor" Color="#10B981"/>
+        <SolidColorBrush x:Key="WarningColor" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="DangerColor" Color="#EF4444"/>
+        <SolidColorBrush x:Key="TextColor" Color="#1F2937"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#6B7280"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#E5E7EB"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SidebarBackground" Color="#1E293B"/>
+        <SolidColorBrush x:Key="SidebarText" Color="#CBD5E1"/>
 
-            <TextBlock Text="Splash Screen funcionando correctamente" 
-                      FontSize="16"
-                      Foreground="#7F8C8D"
-                      HorizontalAlignment="Center"/>
+        <!-- Estilo para botones del menú lateral -->
+        <Style x:Key="SidebarButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource SidebarText}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="8"
+                                Margin="8,2">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#334155"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
-            <Button Content="Continuar" 
-                    Width="120" 
-                    Height="40"
-                    Margin="0,40,0,0"
-                    Background="#3498DB"
-                    Foreground="White"
-                    FontWeight="Bold"
-                    BorderThickness="0"
-                    Cursor="Hand"/>
-        </StackPanel>
+        <!-- Estilo para botones activos del sidebar -->
+        <Style x:Key="SidebarButtonActiveStyle" TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- Estilo para tarjetas de estadísticas -->
+        <Style x:Key="StatCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.08" Color="#000000"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para botones de acción -->
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F3F4F6"/>
+                    <Setter Property="Foreground" Value="{StaticResource PrimaryColor}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Estilo para el botón principal -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="20,12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource SecondaryColor}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- SIDEBAR -->
+        <Border Grid.Column="0" Background="{StaticResource SidebarBackground}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Logo -->
+                <StackPanel Grid.Row="0" Margin="20,30,20,20">
+                    <Image Source="/Images/Ligth/loguito.png" 
+                           Height="50" 
+                           HorizontalAlignment="Left"
+                           x:Name="LogoImage"/>
+                </StackPanel>
+
+                <!-- Barra de búsqueda en sidebar -->
+                <Border Grid.Row="1" 
+                        Background="#334155" 
+                        CornerRadius="8" 
+                        Margin="15,0,15,20"
+                        Padding="12,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="🔍" Grid.Column="0" 
+                                   Foreground="{StaticResource SidebarText}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        <TextBox Grid.Column="1" 
+                                 Background="Transparent" 
+                                 BorderThickness="0"
+                                 Foreground="{StaticResource SidebarText}"
+                                 x:Name="SidebarSearchBox"
+                                 VerticalContentAlignment="Center"
+                                 Text="Search"/>
+                    </Grid>
+                </Border>
+
+                <!-- Menú de navegación -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="8,0">
+                        <Button Style="{StaticResource SidebarButtonActiveStyle}" Click="NavigateToDashboard">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🏠" FontSize="16" Margin="0,0,12,0"/>
+                                <TextBlock Text="Panel Principal" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource SidebarButtonStyle}" Click="NavigateToLicenses">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📋" FontSize="16" Margin="0,0,12,0"/>
+                                <TextBlock Text="Licencias" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource SidebarButtonStyle}" Click="NavigateToProducts">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📦" FontSize="16" Margin="0,0,12,0"/>
+                                <TextBlock Text="Productos" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource SidebarButtonStyle}" Click="NavigateToClients">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="👥" FontSize="16" Margin="0,0,12,0"/>
+                                <TextBlock Text="Clientes" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource SidebarButtonStyle}" Click="NavigateToSettings">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="⚙️" FontSize="16" Margin="0,0,12,0"/>
+                                <TextBlock Text="Configuración" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Separator Margin="10,20" Background="#334155"/>
+
+                        <Button Style="{StaticResource SidebarButtonStyle}" Click="Logout">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🚪" FontSize="16" Margin="0,0,12,0"/>
+                                <TextBlock Text="Cerrar Sesión" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Soporte -->
+                <Border Grid.Row="3" 
+                        Background="#334155" 
+                        CornerRadius="12" 
+                        Margin="15,10,15,20"
+                        Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="Need support?" 
+                                   Foreground="White" 
+                                   FontWeight="SemiBold"
+                                   FontSize="13"/>
+                        <TextBlock Text="Get in touch with our agents" 
+                                   Foreground="{StaticResource SidebarText}" 
+                                   FontSize="11"
+                                   Margin="0,4,0,12"
+                                   TextWrapping="Wrap"/>
+                        <Button Content="Contact us" 
+                                Background="{StaticResource PrimaryColor}"
+                                Foreground="White"
+                                BorderThickness="0"
+                                Padding="12,8"
+                                Cursor="Hand"
+                                FontSize="12"
+                                Click="ContactSupport">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" 
+                                            CornerRadius="6"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- HEADER -->
+            <Border Grid.Row="0" 
+                    Background="White" 
+                    BorderBrush="{StaticResource BorderColor}" 
+                    BorderThickness="0,0,0,1"
+                    Padding="30,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Botón hamburger (opcional) -->
+                    <Button Grid.Column="0" 
+                            Style="{StaticResource ActionButtonStyle}"
+                            Margin="0,0,20,0"
+                            Click="ToggleSidebar">
+                        <TextBlock Text="☰" FontSize="20"/>
+                    </Button>
+
+                    <!-- Barra de búsqueda central -->
+                    <Border Grid.Column="1" 
+                            Background="#F9FAFB" 
+                            CornerRadius="8" 
+                            Padding="12,8"
+                            MaxWidth="500"
+                            HorizontalAlignment="Left">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="🔍" Grid.Column="0" 
+                                       Foreground="{StaticResource TextSecondary}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
+                            <TextBox Grid.Column="1" 
+                                     Background="Transparent" 
+                                     BorderThickness="0"
+                                     x:Name="HeaderSearchBox"
+                                     VerticalContentAlignment="Center"
+                                     FontSize="14"
+                                     Text="Buscar licencias, clientes..."/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Usuario y notificaciones -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <!-- Notificaciones -->
+                        <Button Style="{StaticResource ActionButtonStyle}" 
+                                Margin="0,0,15,0"
+                                Click="ShowNotifications">
+                            <Grid>
+                                <TextBlock Text="🔔" FontSize="18"/>
+                                <Ellipse Width="8" Height="8" 
+                                         Fill="{StaticResource DangerColor}"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Top"
+                                         Margin="0,-2,-2,0"/>
+                            </Grid>
+                        </Button>
+
+                        <!-- Botón tema -->
+                        <Button Style="{StaticResource ActionButtonStyle}" 
+                                Margin="0,0,15,0"
+                                x:Name="ThemeToggleBtn"
+                                Click="ToggleTheme">
+                            <TextBlock Text="🌙" FontSize="18" x:Name="ThemeIcon"/>
+                        </Button>
+
+                        <!-- Info de usuario -->
+                        <Button Background="Transparent" 
+                                BorderThickness="0"
+                                Padding="8"
+                                Cursor="Hand"
+                                Click="ToggleUserMenu">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="40" Height="40" 
+                                        Background="{StaticResource PrimaryColor}"
+                                        CornerRadius="20"
+                                        Margin="0,0,12,0">
+                                    <TextBlock Text="AM" 
+                                               Foreground="White"
+                                               FontWeight="Bold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center" Margin="0,0,8,0">
+                                    <TextBlock Text="Admin Manager" 
+                                               FontWeight="SemiBold"
+                                               FontSize="13"
+                                               Foreground="{StaticResource TextColor}"/>
+                                    <TextBlock Text="Administrador" 
+                                               FontSize="11"
+                                               Foreground="{StaticResource TextSecondary}"/>
+                                </StackPanel>
+                                <TextBlock Text="▼" 
+                                           FontSize="10"
+                                           Foreground="{StaticResource TextSecondary}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- CONTENIDO DEL DASHBOARD -->
+            <ScrollViewer Grid.Row="1" 
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="30">
+                <StackPanel>
+                    <!-- Título de página -->
+                    <TextBlock Text="Dashboard de Licencias" 
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource TextColor}"
+                               Margin="0,0,0,30"/>
+
+                    <!-- Tarjetas de estadísticas -->
+                    <Grid Margin="0,0,0,30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Licencias Totales -->
+                        <Border Grid.Column="0" Style="{StaticResource StatCardStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Licencias Totales" 
+                                               FontSize="13"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               Margin="0,0,0,8"/>
+                                    <TextBlock Text="2,847" 
+                                               FontSize="32"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource TextColor}"/>
+                                </StackPanel>
+
+                                <Border Grid.Column="1" 
+                                        Width="60" Height="60"
+                                        Background="#EFF6FF"
+                                        CornerRadius="30">
+                                    <TextBlock Text="🔑" 
+                                               FontSize="28"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Licencias Activas -->
+                        <Border Grid.Column="1" Style="{StaticResource StatCardStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Licencias Activas" 
+                                               FontSize="13"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               Margin="0,0,0,8"/>
+                                    <TextBlock Text="2,312" 
+                                               FontSize="32"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource SuccessColor}"/>
+                                </StackPanel>
+
+                                <Border Grid.Column="1" 
+                                        Width="60" Height="60"
+                                        Background="#F0FDF4"
+                                        CornerRadius="30">
+                                    <TextBlock Text="✓" 
+                                               FontSize="32"
+                                               Foreground="{StaticResource SuccessColor}"
+                                               FontWeight="Bold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Por Vencer -->
+                        <Border Grid.Column="2" Style="{StaticResource StatCardStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Por Vencer (30 días)" 
+                                               FontSize="13"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               Margin="0,0,0,8"/>
+                                    <TextBlock Text="184" 
+                                               FontSize="32"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource WarningColor}"/>
+                                </StackPanel>
+
+                                <Border Grid.Column="1" 
+                                        Width="60" Height="60"
+                                        Background="#FFFBEB"
+                                        CornerRadius="30">
+                                    <TextBlock Text="⏰" 
+                                               FontSize="28"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Licencias Vencidas -->
+                        <Border Grid.Column="3" Style="{StaticResource StatCardStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="Licencias Vencidas" 
+                                               FontSize="13"
+                                               Foreground="{StaticResource TextSecondary}"
+                                               Margin="0,0,0,8"/>
+                                    <TextBlock Text="93" 
+                                               FontSize="32"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource DangerColor}"/>
+                                </StackPanel>
+
+                                <Border Grid.Column="1" 
+                                        Width="60" Height="60"
+                                        Background="#FEF2F2"
+                                        CornerRadius="30">
+                                    <TextBlock Text="⚠️" 
+                                               FontSize="28"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <!-- Botón Generar Nueva Licencia -->
+                    <StackPanel HorizontalAlignment="Right" Margin="0,0,0,20">
+                        <Button Style="{StaticResource PrimaryButtonStyle}" 
+                                Click="GenerateNewLicense">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="+ " FontSize="16" FontWeight="Bold" Margin="0,0,8,0"/>
+                                <TextBlock Text="Generar Nueva Licencia"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- Tabla de Licencias -->
+                    <Border Background="{StaticResource CardBackground}"
+                            CornerRadius="12"
+                            Padding="0"
+                            Margin="0,0,0,20">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.08" Color="#000000"/>
+                        </Border.Effect>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Header de la tabla -->
+                            <Border Grid.Row="0" 
+                                    BorderBrush="{StaticResource BorderColor}"
+                                    BorderThickness="0,0,0,1"
+                                    Padding="24,20">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0"
+                                               Text="Licencias - Vista Completa" 
+                                               FontSize="18"
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextColor}"/>
+
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <ComboBox Width="180"
+                                                  Margin="0,0,15,0"
+                                                  x:Name="FilterStatusCombo"
+                                                  SelectionChanged="FilterStatus_Changed">
+                                            <ComboBoxItem Content="Todas las licencias" IsSelected="True"/>
+                                            <ComboBoxItem Content="Solo activas"/>
+                                            <ComboBoxItem Content="Solo vencidas"/>
+                                            <ComboBoxItem Content="Por vencer"/>
+                                        </ComboBox>
+
+                                        <Button Content="Ver todas las licencias" 
+                                                Background="Transparent"
+                                                Foreground="{StaticResource PrimaryColor}"
+                                                BorderThickness="0"
+                                                FontSize="13"
+                                                FontWeight="SemiBold"
+                                                Cursor="Hand"
+                                                Click="ViewAllLicenses"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- DataGrid de licencias -->
+                            <DataGrid Grid.Row="1"
+                                      x:Name="LicensesDataGrid"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True"
+                                      HeadersVisibility="Column"
+                                      GridLinesVisibility="None"
+                                      CanUserResizeRows="False"
+                                      CanUserSortColumns="True"
+                                      SelectionMode="Single"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      RowHeight="55"
+                                      Margin="24,0,24,24"
+                                      AlternatingRowBackground="#F9FAFB">
+
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="Background" Value="#F9FAFB"/>
+                                        <Setter Property="Foreground" Value="{StaticResource PrimaryColor}"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="FontSize" Value="11"/>
+                                        <Setter Property="Padding" Value="16,14"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                        <Setter Property="Height" Value="45"/>
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Padding" Value="16,0"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="DataGridCell">
+                                                    <Border Background="{TemplateBinding Background}"
+                                                            BorderThickness="0"
+                                                            Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="#EFF6FF"/>
+                                                <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGrid.CellStyle>
+
+                                <DataGrid.Columns>
+                                    <!-- ID Licencia -->
+                                    <DataGridTextColumn Header="ID LICENCIA" Binding="{Binding LicenseId}" Width="140">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="FontFamily" Value="Consolas"/>
+                                                <Setter Property="Foreground" Value="{StaticResource PrimaryColor}"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                                <Setter Property="FontSize" Value="13"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <!-- Cliente -->
+                                    <DataGridTextColumn Header="CLIENTE" Binding="{Binding Client}" Width="*" MinWidth="150">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="FontWeight" Value="Medium"/>
+                                                <Setter Property="FontSize" Value="14"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <!-- Producto -->
+                                    <DataGridTextColumn Header="PRODUCTO" Binding="{Binding Product}" Width="*" MinWidth="150">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="FontSize" Value="14"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <!-- Fecha Expiración -->
+                                    <DataGridTextColumn Header="FECHA EXPIRACIÓN" Binding="{Binding ExpirationDate, StringFormat='dd MMM yyyy'}" Width="140">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="FontSize" Value="14"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <!-- Días Restantes -->
+                                    <DataGridTemplateColumn Header="DÍAS RESTANTES" Width="120">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{Binding DaysRemainingColor}"
+                                                        CornerRadius="6"
+                                                        Padding="10,5"
+                                                        HorizontalAlignment="Left"
+                                                        MinWidth="85">
+                                                    <TextBlock Text="{Binding DaysRemaining}" 
+                                                               Foreground="White"
+                                                               FontWeight="SemiBold"
+                                                               FontSize="12"
+                                                               HorizontalAlignment="Center"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Estado -->
+                                    <DataGridTemplateColumn Header="ESTADO" Width="100">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{Binding StatusColor}"
+                                                        CornerRadius="6"
+                                                        Padding="10,5"
+                                                        HorizontalAlignment="Left"
+                                                        MinWidth="75">
+                                                    <TextBlock Text="{Binding Status}" 
+                                                               Foreground="White"
+                                                               FontWeight="SemiBold"
+                                                               FontSize="12"
+                                                               HorizontalAlignment="Center"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                    <!-- Acciones -->
+                                    <DataGridTemplateColumn Header="ACCIONES" Width="140">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                    <Button Style="{StaticResource ActionButtonStyle}" 
+                                                            ToolTip="Ver detalles"
+                                                            Margin="2"
+                                                            Click="ViewLicenseDetails">
+                                                        <TextBlock Text="👁️" FontSize="14"/>
+                                                    </Button>
+                                                    <Button Style="{StaticResource ActionButtonStyle}" 
+                                                            ToolTip="Editar"
+                                                            Margin="2"
+                                                            Click="EditLicense">
+                                                        <TextBlock Text="✏️" FontSize="14"/>
+                                                    </Button>
+                                                    <Button Style="{StaticResource ActionButtonStyle}" 
+                                                            ToolTip="Renovar"
+                                                            Margin="2"
+                                                            Click="RenewLicense">
+                                                        <TextBlock Text="🔄" FontSize="14"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+
+                    <!-- Footer -->
+                    <TextBlock Text="© 2024 LicensePro - Sistema de Administración de Licencias | v2.0"
+                               HorizontalAlignment="Center"
+                               Foreground="{StaticResource TextSecondary}"
+                               FontSize="12"
+                               Margin="0,20,0,30"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>
