@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 
 namespace LicenseManager.Presentation.Views
 {
@@ -13,12 +14,14 @@ namespace LicenseManager.Presentation.Views
         private ObservableCollection<LicenseViewModel> _allLicenses;
         private ObservableCollection<LicenseViewModel> _filteredLicenses;
         private bool _isDarkTheme = false;
+        private bool _isSidebarCollapsed = false;
 
         public MainWindow()
         {
             InitializeComponent();
             InitializeData();
             LoadTheme();
+            LoadSidebarState();
         }
 
         private void InitializeData()
@@ -33,9 +36,9 @@ namespace LicenseManager.Presentation.Views
                     Product = "DesignPro Suite",
                     ExpirationDate = DateTime.Now.AddDays(45),
                     Status = "Activa",
-                    StatusColor = new SolidColorBrush(Color.FromRgb(16, 185, 129)), // Green
+                    StatusColor = new SolidColorBrush(Color.FromRgb(16, 185, 129)),
                     DaysRemaining = "+45 días",
-                    DaysRemainingColor = new SolidColorBrush(Color.FromRgb(59, 130, 246)) // Blue
+                    DaysRemainingColor = new SolidColorBrush(Color.FromRgb(59, 130, 246))
                 },
                 new LicenseViewModel
                 {
@@ -44,7 +47,7 @@ namespace LicenseManager.Presentation.Views
                     Product = "AnalyticsMaster",
                     ExpirationDate = DateTime.Now.AddDays(-25),
                     Status = "Expirada",
-                    StatusColor = new SolidColorBrush(Color.FromRgb(239, 68, 68)), // Red
+                    StatusColor = new SolidColorBrush(Color.FromRgb(239, 68, 68)),
                     DaysRemaining = "Vencida",
                     DaysRemainingColor = new SolidColorBrush(Color.FromRgb(239, 68, 68))
                 },
@@ -55,7 +58,7 @@ namespace LicenseManager.Presentation.Views
                     Product = "SecuritySoft v3.2",
                     ExpirationDate = DateTime.Now.AddDays(5),
                     Status = "Por vencer",
-                    StatusColor = new SolidColorBrush(Color.FromRgb(245, 158, 11)), // Orange
+                    StatusColor = new SolidColorBrush(Color.FromRgb(245, 158, 11)),
                     DaysRemaining = "5 días",
                     DaysRemainingColor = new SolidColorBrush(Color.FromRgb(245, 158, 11))
                 },
@@ -124,30 +127,160 @@ namespace LicenseManager.Presentation.Views
 
         private void LoadTheme()
         {
-            // Cargar tema guardado o usar tema claro por defecto
-            _isDarkTheme = false;
-            ApplyTheme();
+            // Cargar tema guardado del registro/config
+            _isDarkTheme = Properties.Settings.Default.IsDarkTheme;
+
+            // Actualizar el icono
+            UpdateThemeIcon();
         }
 
         private void ToggleTheme(object sender, RoutedEventArgs e)
         {
-            _isDarkTheme = !_isDarkTheme;
-            ApplyTheme();
+            // Usar el método estático de App para cambiar el tema
+            App.ToggleTheme();
+
+            // Actualizar la variable local
+            _isDarkTheme = App.IsDarkTheme;
+
+            // Actualizar el icono
+            UpdateThemeIcon();
+
+            // Refrescar el DataGrid
+            LicensesDataGrid?.Items?.Refresh();
         }
 
-        private void ApplyTheme()
+        private void UpdateThemeIcon()
         {
-            if (_isDarkTheme)
+            if (ThemeIcon != null)
             {
-                // Aplicar tema oscuro
-                ThemeIcon.Text = "☀️";
-                // Aquí puedes agregar más cambios de tema
-                // Por ejemplo, cambiar colores de recursos
+                ThemeIcon.Text = _isDarkTheme ? "☀️" : "🌙";
+            }
+        }
+
+        public void OnThemeChanged()
+        {
+            // Actualizar la variable local
+            _isDarkTheme = App.IsDarkTheme;
+
+            // Actualizar el icono
+            UpdateThemeIcon();
+
+            // Refrescar el DataGrid
+            LicensesDataGrid?.Items?.Refresh();
+
+            // Forzar actualización visual
+            this.InvalidateVisual();
+        }
+
+        #endregion
+
+        #region Sidebar Management
+
+        private void LoadSidebarState()
+        {
+            // Cargar estado del sidebar
+            var savedCollapsed = Properties.Settings.Default.IsSidebarCollapsed;
+            _isSidebarCollapsed = savedCollapsed;
+
+            if (_isSidebarCollapsed)
+            {
+                CollapseSidebar(false); // Sin animación al inicio
+            }
+        }
+
+        private void ToggleSidebar(object sender, RoutedEventArgs e)
+        {
+            _isSidebarCollapsed = !_isSidebarCollapsed;
+
+            if (_isSidebarCollapsed)
+            {
+                CollapseSidebar(true);
             }
             else
             {
-                // Aplicar tema claro
-                ThemeIcon.Text = "🌙";
+                ExpandSidebar(true);
+            }
+
+            // Guardar preferencia
+            Properties.Settings.Default.IsSidebarCollapsed = _isSidebarCollapsed;
+            Properties.Settings.Default.Save();
+        }
+
+        private void CollapseSidebar(bool animate)
+        {
+            var duration = animate ? TimeSpan.FromMilliseconds(300) : TimeSpan.Zero;
+
+            // Animar ancho del sidebar
+            var widthAnimation = new GridLengthAnimation
+            {
+                From = new GridLength(280),
+                To = new GridLength(75),
+                Duration = new Duration(duration)
+            };
+            SidebarColumn.BeginAnimation(ColumnDefinition.WidthProperty, widthAnimation);
+
+            // Ocultar elementos
+            LogoTitle.Visibility = Visibility.Collapsed;
+            LogoSubtitle.Visibility = Visibility.Collapsed;
+            SidebarSearchBox.Visibility = Visibility.Collapsed;
+            SupportSection.Visibility = Visibility.Collapsed;
+
+            // Ocultar textos de los botones del menú
+            DashboardText.Visibility = Visibility.Collapsed;
+            LicensesText.Visibility = Visibility.Collapsed;
+            ProductsText.Visibility = Visibility.Collapsed;
+            ClientsText.Visibility = Visibility.Collapsed;
+            SettingsText.Visibility = Visibility.Collapsed;
+            LogoutText.Visibility = Visibility.Collapsed;
+
+            // Centrar contenido del logo
+            LogoSection.HorizontalAlignment = HorizontalAlignment.Center;
+            LogoSection.Margin = new Thickness(0, 20, 0, 15);
+
+            // Centrar botones del menú
+            foreach (Button btn in MenuItemsPanel.Children.OfType<Button>())
+            {
+                btn.HorizontalContentAlignment = HorizontalAlignment.Center;
+                btn.Padding = new Thickness(8, 12, 8, 12);
+            }
+        }
+
+        private void ExpandSidebar(bool animate)
+        {
+            var duration = animate ? TimeSpan.FromMilliseconds(300) : TimeSpan.Zero;
+
+            // Animar ancho del sidebar
+            var widthAnimation = new GridLengthAnimation
+            {
+                From = new GridLength(75),
+                To = new GridLength(280),
+                Duration = new Duration(duration)
+            };
+            SidebarColumn.BeginAnimation(ColumnDefinition.WidthProperty, widthAnimation);
+
+            // Mostrar elementos
+            LogoTitle.Visibility = Visibility.Visible;
+            LogoSubtitle.Visibility = Visibility.Visible;
+            SidebarSearchBox.Visibility = Visibility.Visible;
+            SupportSection.Visibility = Visibility.Visible;
+
+            // Mostrar textos de los botones del menú
+            DashboardText.Visibility = Visibility.Visible;
+            LicensesText.Visibility = Visibility.Visible;
+            ProductsText.Visibility = Visibility.Visible;
+            ClientsText.Visibility = Visibility.Visible;
+            SettingsText.Visibility = Visibility.Visible;
+            LogoutText.Visibility = Visibility.Visible;
+
+            // Restaurar alineación del logo
+            LogoSection.HorizontalAlignment = HorizontalAlignment.Stretch;
+            LogoSection.Margin = new Thickness(25, 30, 25, 20);
+
+            // Restaurar alineación de botones
+            foreach (Button btn in MenuItemsPanel.Children.OfType<Button>())
+            {
+                btn.HorizontalContentAlignment = HorizontalAlignment.Left;
+                btn.Padding = new Thickness(20, 12, 20, 12);
             }
         }
 
@@ -182,6 +315,9 @@ namespace LicenseManager.Presentation.Views
 
         private void Logout(object sender, RoutedEventArgs e)
         {
+            // Cerrar el popup si está abierto
+            UserMenuPopup.IsOpen = false;
+
             var result = MessageBox.Show("¿Estás seguro de que quieres cerrar sesión?",
                                         "Cerrar Sesión",
                                         MessageBoxButton.YesNo,
@@ -197,16 +333,28 @@ namespace LicenseManager.Presentation.Views
 
         #region UI Interactions
 
-        private void ToggleSidebar(object sender, RoutedEventArgs e)
-        {
-            // Implementar lógica para ocultar/mostrar sidebar
-            MessageBox.Show("Toggle Sidebar", "UI", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
         private void ToggleUserMenu(object sender, RoutedEventArgs e)
         {
-            // Implementar menú desplegable de usuario
-            MessageBox.Show("Menú de usuario", "UI", MessageBoxButton.OK, MessageBoxImage.Information);
+            // Abrir o cerrar el menú desplegable de usuario
+            UserMenuPopup.IsOpen = !UserMenuPopup.IsOpen;
+        }
+
+        private void OpenProfile(object sender, RoutedEventArgs e)
+        {
+            UserMenuPopup.IsOpen = false;
+            MessageBox.Show("Abriendo perfil de usuario...", "Mi Perfil", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void OpenSettings(object sender, RoutedEventArgs e)
+        {
+            UserMenuPopup.IsOpen = false;
+            MessageBox.Show("Abriendo configuración...", "Configuración", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void OpenHelp(object sender, RoutedEventArgs e)
+        {
+            UserMenuPopup.IsOpen = false;
+            MessageBox.Show("Abriendo centro de ayuda...", "Ayuda", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void ShowNotifications(object sender, RoutedEventArgs e)
@@ -379,6 +527,50 @@ namespace LicenseManager.Presentation.Views
         public string Status { get; set; }
         public SolidColorBrush StatusColor { get; set; }
         public SolidColorBrush DaysRemainingColor { get; set; }
+    }
+
+    #endregion
+
+    #region GridLength Animation Helper
+
+    // Clase helper para animar GridLength
+    public class GridLengthAnimation : AnimationTimeline
+    {
+        public GridLength From
+        {
+            get { return (GridLength)GetValue(FromProperty); }
+            set { SetValue(FromProperty, value); }
+        }
+
+        public static readonly DependencyProperty FromProperty =
+            DependencyProperty.Register("From", typeof(GridLength), typeof(GridLengthAnimation));
+
+        public GridLength To
+        {
+            get { return (GridLength)GetValue(ToProperty); }
+            set { SetValue(ToProperty, value); }
+        }
+
+        public static readonly DependencyProperty ToProperty =
+            DependencyProperty.Register("To", typeof(GridLength), typeof(GridLengthAnimation));
+
+        public override Type TargetPropertyType => typeof(GridLength);
+
+        protected override Freezable CreateInstanceCore()
+        {
+            return new GridLengthAnimation();
+        }
+
+        public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue, AnimationClock animationClock)
+        {
+            double fromVal = ((GridLength)GetValue(FromProperty)).Value;
+            double toVal = ((GridLength)GetValue(ToProperty)).Value;
+
+            if (fromVal > toVal)
+                return new GridLength((1 - animationClock.CurrentProgress.Value) * (fromVal - toVal) + toVal, GridUnitType.Pixel);
+            else
+                return new GridLength(animationClock.CurrentProgress.Value * (toVal - fromVal) + fromVal, GridUnitType.Pixel);
+        }
     }
 
     #endregion
