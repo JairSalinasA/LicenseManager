@@ -369,7 +369,7 @@
                                 Margin="0,0,10,0"
                                 Click="ShowNotifications">
                             <Grid>
-                                <TextBlock Text="🔔" FontSize="16"/>
+                                <TextBlock Text="🔔" FontSize="12"/>
                                 <Ellipse Width="8" Height="8" 
                                          Fill="{DynamicResource DangerColor}"
                                          HorizontalAlignment="Right"
@@ -384,7 +384,7 @@
                                 x:Name="ThemeToggleBtn"
                                 Click="ToggleTheme"
                                 ToolTip="Cambiar tema">
-                            <TextBlock Text="🌙" FontSize="16" x:Name="ThemeIcon"/>
+                            <TextBlock Text="🌙" FontSize="12" x:Name="ThemeIcon"/>
                         </Button>
 
                         <!-- Info de usuario con menú desplegable -->
